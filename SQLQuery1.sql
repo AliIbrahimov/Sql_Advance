@@ -26,12 +26,12 @@ VALUES
 ('Jack','London')
 CREATE VIEW BookInfo
 As
-select bk.Id,bk.Name,bk.PageCount,a.Name + a.Surname as FullName from Books bk
+select bk.Id,bk.Name,bk.PageCount,a.Name + ' ' + a.Surname as FullName from Books bk
 JOIN Authors a
 ON bk.AuthorId = a.Id
 
 SELECT * FROM BookInfo
-
+drop view BookInfo
 CREATE PROCEDURE SelectAuthoor @Name nvarchar(25), @FullName nvarchar(25)
 AS
 SELECT * FROM Authors WHERE Name = @Name OR Name + Surname = @FullName
@@ -43,7 +43,10 @@ EXEC SelectAuthoor @Name = 'Victor', @FullName = '';
 --Authors-lari Id,FullName,BooksCount,MaxPageCount seklinde qaytaran view yaradirsiniz
 CREATE VIEW AuthorInfo
 As
-select a.Id,a.Name + a.Surname as FullName, from Books bk
-JOIN Authors a
-ON bk.AuthorId = a.Id
+SELECT a.Id, CONCAT(a.Name, ' ', a.Surname) AS FullName, 
+COUNT(b.Id) AS BooksCount,
+MAX(b.PageCount) AS MaxPageCount
+FROM Authors a
+JOIN Books b ON a.Id = b.AuthorId
+GROUP BY a.Id;
 
